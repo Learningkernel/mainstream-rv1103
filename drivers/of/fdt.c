@@ -777,7 +777,7 @@ const void * __init of_flat_dt_match_machine(const void *default_match,
 		const char *prop;
 		int size;
 
-		pr_err("\n unrecognized device tree list:\n[ ");
+		early_print("\n unrecognized device tree list:\n[ ");
 
 		prop = of_get_flat_dt_prop(dt_root, "compatible", &size);
 		if (prop) {
@@ -791,7 +791,7 @@ const void * __init of_flat_dt_match_machine(const void *default_match,
 		return NULL;
 	}
 
-	pr_info("Machine model: %s\n", of_flat_dt_get_machine_name());
+	early_print("Machine model: %s\n", of_flat_dt_get_machine_name());
 
 	return best_data;
 }
@@ -1028,6 +1028,7 @@ u64 __init dt_mem_next_cell(int s, const __be32 **cellp)
  */
 int __init early_init_dt_scan_memory(void)
 {
+    early_print("%s start\n", __func__);
 	int node, found_memory = 0;
 	const void *fdt = initial_boot_params;
 
@@ -1052,7 +1053,7 @@ int __init early_init_dt_scan_memory(void)
 
 		hotpluggable = of_get_flat_dt_prop(node, "hotpluggable", NULL);
 
-		pr_debug("memory scan node %s, reg {addr,size} entries %d,\n",
+		early_print("memory scan node %s, reg {addr,size} entries %d,\n",
 			 fdt_get_name(fdt, node, NULL), l);
 
 		for (i = 0; i < l; i++) {
@@ -1062,7 +1063,7 @@ int __init early_init_dt_scan_memory(void)
 
 			if (size == 0)
 				continue;
-			pr_debug(" - %llx, %llx\n", base, size);
+			early_print(" - %llx, %llx\n", base, size);
 
 			early_init_dt_add_memory_arch(base, size);
 
@@ -1072,7 +1073,7 @@ int __init early_init_dt_scan_memory(void)
 				continue;
 
 			if (memblock_mark_hotplug(base, size))
-				pr_warn("failed to mark hotplug range 0x%llx - 0x%llx\n",
+				early_print("failed to mark hotplug range 0x%llx - 0x%llx\n",
 					base, base + size);
 		}
 	}
@@ -1148,6 +1149,7 @@ handle_cmdline:
 
 void __init __weak early_init_dt_add_memory_arch(u64 base, u64 size)
 {
+    early_print("%s start\n", __func__);
 	const u64 phys_offset = MIN_MEMBLOCK_ADDR;
 
 	if (size < PAGE_SIZE - (base & ~PAGE_MASK)) {
@@ -1186,6 +1188,7 @@ void __init __weak early_init_dt_add_memory_arch(u64 base, u64 size)
 		base = phys_offset;
 	}
 	memblock_add(base, size);
+    early_print("%s end\n", __func__);
 }
 
 static void * __init early_init_dt_alloc_memory_arch(u64 size, u64 align)
@@ -1222,7 +1225,7 @@ void __init early_init_dt_scan_nodes(void)
 	/* Retrieve various information from the /chosen node */
 	rc = early_init_dt_scan_chosen(boot_command_line);
 	if (rc)
-		pr_warn("No chosen node found, continuing without\n");
+		early_print("No chosen node found, continuing without\n");
 
 	/* Setup memory, calling early_init_dt_add_memory_arch */
 	early_init_dt_scan_memory();
@@ -1232,6 +1235,7 @@ void __init early_init_dt_scan_nodes(void)
 
 	/* Handle kexec handover */
 	early_init_dt_check_kho();
+    early_print("%s end\n", __func__);
 }
 
 bool __init early_init_dt_scan(void *dt_virt, phys_addr_t dt_phys)

@@ -204,6 +204,7 @@ const struct machine_desc * __init setup_machine_fdt(void *dt_virt)
 		return NULL;
 
 	mdesc = of_flat_dt_match_machine(mdesc_best, arch_get_next_mach);
+    if (mdesc) early_print("\n mdesc not null \n");
 
 	if (!mdesc) {
 		const char *prop;
@@ -226,9 +227,10 @@ const struct machine_desc * __init setup_machine_fdt(void *dt_virt)
 	}
 
 	/* We really don't want to do this, but sometimes firmware provides buggy data */
-	if (mdesc->dt_fixup)
+	/*
+    if (mdesc->dt_fixup)
 		mdesc->dt_fixup();
-
+    */
 	early_init_dt_scan_nodes();
 
 	/* Change machine number to match the mdesc we're using */

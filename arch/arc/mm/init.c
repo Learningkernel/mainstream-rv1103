@@ -71,7 +71,7 @@ void __init early_init_dt_add_memory_arch(u64 base, u64 size)
 #endif
 	}
 
-	pr_info("Memory @ %llx [%lldM] %s\n",
+	early_print("Memory @ %llx [%lldM] %s\n",
 		base, TO_MB(size), !in_use ? "Not used":"");
 }
 
